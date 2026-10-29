@@ -8,8 +8,12 @@ const SUPABASE_FREE_TIER_BYTES = 1024 * 1024 * 1024; // 1 GB in bytes
 
 export async function GET() {
   try {
-    await fs.mkdir(UPLOADS_DIR, { recursive: true });
-    const dirents = await fs.readdir(UPLOADS_DIR, { withFileTypes: true });
+    let dirents: any[] = [];
+    try {
+      dirents = await fs.readdir(UPLOADS_DIR, { withFileTypes: true });
+    } catch {
+      dirents = [];
+    }
 
     const [products, categories, settings, orders, blogPosts] = await Promise.all([
       getProducts(),

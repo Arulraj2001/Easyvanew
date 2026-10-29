@@ -547,24 +547,57 @@ When you invest in authentic handcrafted pieces directly from regional studios:
   ],
 };
 
+// In-memory cache for serverless environments (e.g. Vercel)
+let inMemoryStore: StoreData | null = null;
+const TMP_DATA_FILE = path.join("/tmp", "easyva_store.json");
+
 /**
  * Ensures the data storage file exists and returns current parsed data.
+ * Resilient for local dev and serverless platforms (Vercel read-only filesystem).
  */
 async function loadStore(): Promise<StoreData> {
+  if (inMemoryStore) {
+    return inMemoryStore;
+  }
+
+  // 1. Try reading from writable serverless /tmp storage (persists across warm lambdas)
   try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    const content = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(content) as StoreData;
+    const tmpContent = await fs.readFile(TMP_DATA_FILE, "utf-8");
+    inMemoryStore = JSON.parse(tmpContent) as StoreData;
+    return inMemoryStore;
   } catch {
-    // If file doesn't exist yet, save seed data and return it
-    await saveStore(INITIAL_SEED);
-    return INITIAL_SEED;
+    // No /tmp file yet, proceed to repository seed data
+  }
+
+  // 2. Read bundled data file from repository
+  try {
+    const content = await fs.readFile(DATA_FILE, "utf-8");
+    inMemoryStore = JSON.parse(content) as StoreData;
+    return inMemoryStore;
+  } catch {
+    inMemoryStore = INITIAL_SEED;
+    return inMemoryStore;
   }
 }
 
 async function saveStore(data: StoreData): Promise<void> {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  inMemoryStore = data;
+
+  // 1. Try saving to local repo data directory (development / local server)
+  try {
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+    return;
+  } catch {
+    // Read-only filesystem on serverless platforms (e.g. Vercel / AWS Lambda)
+  }
+
+  // 2. Fallback to /tmp directory (writable in serverless execution environments)
+  try {
+    await fs.writeFile(TMP_DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Could not write to serverless /tmp cache:", err);
+  }
 }
 
 // -------------------------------------------------------------------------
