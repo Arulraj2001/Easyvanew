@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { BlogPost, Product, BlogFaqItem } from "@/lib/types";
 import ImageCropperModal from "@/components/ImageCropperModal";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 const BLOG_CATEGORIES = [
   "Artisan Traditions",
@@ -43,47 +44,69 @@ const BLOG_CATEGORIES = [
 
 const MASTER_AI_PROMPT = `Generate an in-depth, high-ranking 1,200-word SEO article for Easyva (an authentic South Indian artisan & handicraft boutique in Coimbatore, Tamil Nadu).
 
+IMPORTANT STYLING & FORMATTING RULES FOR "content":
+1. Use a clear # Catchy H1 Heading with the primary keyword.
+2. Use ## (H2) for each numbered main section (e.g. ## 1. Thanjavur Paintings: 22K Gold & Devotion).
+3. Use ### (H3) for ALL sub-sections (e.g. ### Artisan Technique & Materials, ### How to Spot Real vs Machine Fakes, ### Modern Interior Styling Tips). Never leave section labels as plain text.
+4. Format all key takeaways as bullet points starting with bold keywords (e.g. - **Surface Relief**: Meticulous tamarind seed gesso...).
+5. Format ordered sequences as 1. 2. 3. numbered lists.
+6. Include at least two blockquotes with curator insights (e.g. > **Curator's Pro Tip**: Always illuminate gold foil with warm 2700K accent spotlights...).
+7. Include a dedicated care section with ### Care & Maintenance Guidelines.
+8. End with ## Conclusion: Supporting Rural Artisan Heritage.
+9. Return valid JSON only with escaped newlines (\\n\\n) in the content string.
+
 Return your response strictly as valid JSON matching this exact structure:
 
 {
-  "title": "Title with primary keyword (50-65 chars)",
-  "slug": "url-friendly-slug-with-primary-keyword",
+  "title": "Tamil Nadu Handicrafts Online: A Collector's Guide to Authentic South Indian Art",
+  "slug": "tamil-nadu-handicrafts-online-collectors-guide",
   "category": "Artisan Traditions",
-  "primary_keyword": "e.g. Tamil Nadu handicrafts online",
+  "primary_keyword": "Tamil Nadu handicrafts online",
   "secondary_keywords": [
     "Thanjavur paintings Chennai",
     "Swamimalai bronze idols",
     "Chettinad terracotta pottery",
-    "authentic Indian handicraft store"
+    "authentic Indian handicraft store",
+    "South Indian heritage home decor"
   ],
-  "meta_title": "SEO Page Title | Easyva Artisan Crafts (55-60 chars)",
-  "meta_description": "Compelling 150-160 character snippet with primary keyword and CTA.",
-  "canonical_url": "https://easyva.in/blog/your-slug-here",
+  "meta_title": "Tamil Nadu Handicrafts Online: Authentic Artisan Buying Guide | Easyva",
+  "meta_description": "Shop authentic Tamil Nadu handicrafts online. Discover genuine Thanjavur gold leaf paintings, Swamimalai bronze, and Chettinad pottery directly from artisans.",
+  "canonical_url": "https://easyva.in/blog/tamil-nadu-handicrafts-online-collectors-guide",
   "cover_image": "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=1600&q=80",
-  "excerpt": "Brief engaging 2-sentence summary for the blog archive card.",
+  "excerpt": "Discover how ancient master sculptors, gold-leaf gilders, and terracotta artisans across Tamil Nadu bring timeless heritage and tactile soul to contemporary luxury spaces.",
   "reading_time": "6 min read",
-  "tags": ["Tamil Nadu Crafts", "Heritage Decor", "Handmade India", "Artisan Luxury"],
+  "tags": ["Tamil Nadu Crafts", "Heritage Decor", "Handmade India", "Artisan Luxury", "Thanjavur Art"],
   "author_name": "Murugan Boutique & Artisan Guild",
   "author_role": "Heritage Craft Curator",
   "faq_items": [
     {
-      "question": "How do you verify the authenticity of Thanjavur paintings?",
-      "answer": "Authentic Thanjavur paintings use certified 22-karat beaten gold foil, unadulterated tamarind-seed paste for relief work, and natural mineral dyes on solid teakwood boards."
+      "question": "How do you verify the authenticity of a genuine Thanjavur painting?",
+      "answer": "Authentic Thanjavur paintings feature high-relief gesso work sculpted with natural tamarind seed paste, layered with certified 22-karat beaten gold foil and genuine semi-precious Jaipur gemstones mounted on solid teakwood boards. Machine prints are flat, lack tactile relief, and reflect an unnatural glossy plastic sheen."
     },
     {
-      "question": "Are bronze statues from Swamimalai GI certified?",
-      "answer": "Yes, Swamimalai bronze idols carry official Geographical Indication (GI) status and are sculpted using the ancient lost-wax casting technique dating back to the Chola dynasty."
+      "question": "What is the lost-wax casting technique used for Swamimalai bronze idols?",
+      "answer": "In Swamimalai, master sthapathis hand-sculpt each deity in beeswax, coat it with Kaveri riverbed alluvial clay, melt the wax away with heat (cire perdue), and cast molten Panchaloha bronze into the hollow void. Since the clay mold must be broken to extract the idol, every single piece is a one-of-a-kind original."
+    },
+    {
+      "question": "How should I care for Chettinad terracotta and handmade pottery?",
+      "answer": "Dust regularly with a dry microfibre brush or soft cotton cloth. Never use harsh chemical detergents on unglazed porous terracotta. Keep indoor pots away from continuous standing moisture to preserve the natural earthen patina."
     },
     {
       "question": "Does Easyva provide breakage insurance for fragile handicraft shipments?",
-      "answer": "Every order is packaged in multi-layer honeycomb cushioning and reinforced cartons, backed by 100% transit insurance with immediate replacement."
+      "answer": "Yes, all delicate ceramics, Thanjavur glass frames, and terracotta artworks are cushioned in eco-friendly honeycomb shock wrap and double-walled heavy-gauge export cartons, covered by our 100% transit damage guarantee with immediate replacement."
     }
   ],
-  "content": "# Catchy H1 Heading\\n\\nIntroduction capturing Tamil Nadu's craft heritage...\\n\\n## 1. Subheading Name\\nDetails, artisan techniques, styling tips...\\n\\n## 2. Next Craft\\nDetails...\\n\\n## Caring For Your Artisan Crafts\\nMaintenance advice...\\n\\n## Conclusion\\nCall to support rural master artisans."
+  "content": "# Tamil Nadu Handicrafts Online: A Collector's Guide to Authentic South Indian Art\\n\\nTamil Nadu has flourished for millennia as the cradle of sacred South Indian craft culture. For homeowners and interior designers seeking authenticity over mass-produced factory decor, handcrafted heritage art offers unmatched textural character, tactile history, and sustainable soul.\\n\\n## 1. Classical Thanjavur Paintings: 22K Gold Foil & Devotional Radiance\\n\\nOriginating under the 16th-century Maratha kings of Thanjavur, Tanjore art represents the pinnacle of surface embellishment.\\n\\n### Master Artisan Technique & Materials\\n\\n- **The Base Foundation**: High-grade unbleached cotton fabric is stretched and pasted onto seasoned teakwood with natural arabic gum.\\n- **Surface Relief (Muck Work)**: Tamarind seed paste blended with chalk powder is hand-piped to create three-dimensional relief on crowns, pillars, and jewellery.\\n- **Pure 22-Karat Gold Foil**: Paper-thin beaten gold foil is meticulously pressed over the raised motifs, burnished to a luminous warm twilight glow.\\n\\n### How to Spot Genuine Authenticity vs Fakes\\n\\nRun your fingertips gently across the surface. Genuine Tanjore art has pronounced, organic relief variations with natural depth. Beware of cheap digital prints mounted under glass that mimic gold with metallic ink.\\n\\n> **Curator's Pro Tip**: Illuminate your Thanjavur canvas with 2700K warm spotlighting at a 30-degree ceiling angle to amplify the reflective brilliance of the 22K gold leaf.\\n\\n## 2. Swamimalai Bronze Idols: Chola Lost-Wax Mastery\\n\\nOn the banks of the sacred Kaveri River, Swamimalai artisans carry forth the GI-protected (Geographical Indication) bronze casting tradition dating back to the Imperial Chola Dynasty.\\n\\n### The Lost-Wax Casting Process\\n\\n1. **Beeswax Sculpting**: Master sthapathis carve the divine form according to strict Shilpa Shastra proportions.\\n2. **Clay Coating**: Fine alluvial clay from the Kaveri River is applied in progressive layers and sun-dried.\\n3. **De-Waxing & Metal Pouring**: Molten Panchaloha alloy (copper, zinc, lead, gold, silver) is poured into the hollow baked mold.\\n4. **Hand Chiselling**: The mold is shattered, and artisans spend 3 to 4 weeks chiselling intricate ornamentation by hand.\\n\\n## 3. Chettinad Terracotta & Handmade Pottery\\n\\nFrom the palatial courtyards of Karaikudi and Chettinad comes rustic pottery fired in traditional wood kilns with deep earthen magnetism.\\n\\n### Contemporary Architectural Styling Tips\\n\\n- **Entryway Statement**: Group three varying-height terracotta urns on micro-cement flooring for immediate warmth.\\n- **Botanical Corners**: Pair raw fluted planters with lush indoor foliage like fiddle leaf figs and monstera.\\n\\n## Care & Preservation Guide for Heritage Crafts\\n\\n- **Thanjavur Art**: Keep away from direct sunlight, damp walls, and high-humidity bathrooms. Dust only with a dry lint-free cloth.\\n- **Swamimalai Bronzes**: Clean periodically with a mild tamarind-water paste, rinse with fresh water, and buff dry to restore golden luster.\\n- **Terracotta Pieces**: Keep unglazed terracotta dry and avoid abrasive cleaners.\\n\\n## Conclusion: Preserving Living Heritage in Modern Homes\\n\\nWhen you invest in authentic Tamil Nadu handicrafts online from Easyva, you directly support master artisan families across Coimbatore, Thanjavur, and Swamimalai, preserving sacred craft knowledge for future generations."
 }`;
 
 function parseImportedContent(raw: string): Partial<BlogPost> {
-  const text = raw.trim();
+  // Normalize smart / curly quotes, smart apostrophes, and unusual dashes before parsing
+  const clean = raw
+    .trim()
+    .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"')
+    .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+
+  const text = clean;
 
   // 1. Try parsing JSON
   if (text.startsWith("{") || (text.includes("```json") && text.includes("}"))) {
@@ -1323,13 +1346,11 @@ Example:
                           </span>
                         </div>
                       ) : (
-                        <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 min-h-[300px] max-h-[420px] overflow-y-auto text-xs leading-relaxed">
+                        <div className="p-5 sm:p-7 bg-white rounded-2xl border border-slate-200 min-h-[350px] max-h-[500px] overflow-y-auto shadow-inner">
                           {formData.content ? (
-                            <div className="whitespace-pre-wrap font-sans text-slate-800">
-                              {formData.content}
-                            </div>
+                            <MarkdownRenderer content={formData.content} />
                           ) : (
-                            <span className="text-slate-400 italic">No content to preview yet.</span>
+                            <span className="text-slate-400 italic">No content to preview yet. Write or import Markdown to view live styling.</span>
                           )}
                         </div>
                       )}

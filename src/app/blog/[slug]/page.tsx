@@ -16,6 +16,7 @@ import {
   HelpCircle,
   Hash,
 } from "lucide-react";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -81,110 +82,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /**
  * Custom zero-dependency Markdown Parser for high performance & clean semantic HTML.
  */
-function renderMarkdown(content: string) {
-  const lines = content.split("\n");
-  const elements: React.ReactNode[] = [];
-  let inList = false;
-  let listItems: string[] = [];
-
-  const flushList = () => {
-    if (inList && listItems.length > 0) {
-      elements.push(
-        <ul key={`ul-${elements.length}`} className="my-4 space-y-2 pl-5 list-disc text-slate-700 leading-relaxed text-sm sm:text-base">
-          {listItems.map((item, idx) => (
-            <li key={idx} dangerouslySetInnerHTML={{ __html: parseInline(item) }} />
-          ))}
-        </ul>
-      );
-      listItems = [];
-      inList = false;
-    }
-  };
-
-  const parseInline = (text: string) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em class="italic text-slate-800">$1</em>')
-      .replace(/`([^`]+)`/g, '<code class="bg-slate-100 text-easyva-purple-700 px-1.5 py-0.5 rounded font-mono text-xs font-semibold">$1</code>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-easyva-purple-600 underline hover:text-easyva-purple-800 font-semibold">$1</a>');
-  };
-
-  for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i];
-    const line = rawLine.trim();
-
-    if (!line) {
-      flushList();
-      continue;
-    }
-
-    // H1
-    if (line.startsWith("# ")) {
-      flushList();
-      const text = line.replace("# ", "");
-      elements.push(
-        <h1 key={`h1-${i}`} className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight mt-8 mb-4 leading-tight">
-          {text}
-        </h1>
-      );
-      continue;
-    }
-
-    // H2
-    if (line.startsWith("## ")) {
-      flushList();
-      const text = line.replace("## ", "");
-      const id = text.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
-      elements.push(
-        <h2 id={id} key={`h2-${i}`} className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-10 mb-3 pt-4 border-t border-slate-100 scroll-mt-24">
-          {text}
-        </h2>
-      );
-      continue;
-    }
-
-    // H3
-    if (line.startsWith("### ")) {
-      flushList();
-      const text = line.replace("### ", "");
-      elements.push(
-        <h3 key={`h3-${i}`} className="text-lg sm:text-xl font-bold text-slate-900 mt-6 mb-2">
-          {text}
-        </h3>
-      );
-      continue;
-    }
-
-    // Blockquote
-    if (line.startsWith("> ")) {
-      flushList();
-      const text = line.replace("> ", "");
-      elements.push(
-        <blockquote key={`quote-${i}`} className="my-6 p-4 border-l-4 border-easyva-purple-600 bg-purple-50/50 rounded-r-2xl text-slate-700 italic text-sm sm:text-base leading-relaxed">
-          <span dangerouslySetInnerHTML={{ __html: parseInline(text) }} />
-        </blockquote>
-      );
-      continue;
-    }
-
-    // Bullet List
-    if (line.startsWith("- ") || line.startsWith("* ")) {
-      inList = true;
-      listItems.push(line.replace(/^[-*]\s+/, ""));
-      continue;
-    }
-
-    // Regular Paragraph
-    flushList();
-    elements.push(
-      <p key={`p-${i}`} className="my-4 text-slate-700 text-sm sm:text-base leading-relaxed" dangerouslySetInnerHTML={{ __html: parseInline(line) }} />
-    );
-  }
-
-  flushList();
-  return elements;
-}
-
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
@@ -379,9 +276,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Main Content Body */}
         <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xs space-y-6">
-          <div className="prose prose-slate max-w-none text-slate-800">
-            {renderMarkdown(post.content)}
-          </div>
+          <MarkdownRenderer content={post.content} />
 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
