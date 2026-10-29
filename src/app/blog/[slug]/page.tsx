@@ -18,6 +18,10 @@ import {
 } from "lucide-react";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
+export const revalidate = 0;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -373,7 +377,7 @@ export default async function BlogPostPage({ params }: Props) {
                       ₹{prod.price.toLocaleString("en-IN")}
                     </div>
                     <Link
-                      href={`/products/${prod.slug}`}
+                      href={`/product/${prod.slug}`}
                       className="px-2.5 py-1.5 bg-easyva-purple-600 hover:bg-easyva-purple-700 text-white text-[11px] font-bold rounded-lg transition-colors flex items-center gap-1"
                     >
                       <span>View</span>
@@ -406,7 +410,7 @@ export default async function BlogPostPage({ params }: Props) {
               {post.author?.role || post.author_role || "Heritage Craft Curator"} • Murugan Boutique & Artisan Guild
             </p>
             <p className="text-xs text-slate-600 leading-relaxed max-w-2xl pt-1">
-              Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.
+              {post.author_bio || "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide."}
             </p>
           </div>
         </div>

@@ -115,6 +115,11 @@ export interface SiteSettings {
   store_address?: string;
   instagram_url?: string;
   whatsapp_number?: string;
+  // Default Blog Author Profile
+  default_blog_author_name?: string;
+  default_blog_author_role?: string;
+  default_blog_author_avatar?: string;
+  default_blog_author_bio?: string;
 }
 
 export interface BlogFaqItem {
@@ -134,6 +139,7 @@ export interface BlogPost {
   author_name: string;
   author_role: string;
   author_avatar?: string;
+  author_bio?: string;
   read_time_minutes: number;
   reading_time?: string;
   is_published: boolean;
@@ -152,6 +158,7 @@ export interface BlogPost {
     name: string;
     role: string;
     avatar?: string;
+    bio?: string;
   };
   seo?: {
     meta_title?: string;

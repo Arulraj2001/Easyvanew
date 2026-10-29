@@ -438,7 +438,11 @@
     "google_search_console_tag": "",
     "google_analytics_id": "",
     "enable_cod": true,
-    "custom_upi_qr_url": ""
+    "custom_upi_qr_url": "",
+    "default_blog_author_name": "Murugan Boutique & Artisan Collective",
+    "default_blog_author_role": "Heritage Craft Curator",
+    "default_blog_author_avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+    "default_blog_author_bio": "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide."
   },
   "blog_posts": [
     {

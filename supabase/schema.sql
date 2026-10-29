@@ -167,6 +167,10 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     google_analytics_id TEXT DEFAULT '',
     enable_cod BOOLEAN NOT NULL DEFAULT true,
     custom_upi_qr_url TEXT DEFAULT '',
+    default_blog_author_name TEXT DEFAULT 'Murugan Boutique & Artisan Collective',
+    default_blog_author_role TEXT DEFAULT 'Heritage Craft Curator',
+    default_blog_author_avatar TEXT DEFAULT 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
+    default_blog_author_bio TEXT DEFAULT 'Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
@@ -214,6 +218,7 @@ CREATE TABLE IF NOT EXISTS public.blog_posts (
     author_name TEXT DEFAULT 'Murugan Boutique',
     author_role TEXT DEFAULT 'Heritage Craft Curator',
     author_avatar TEXT DEFAULT 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
+    author_bio TEXT,
     is_published BOOLEAN NOT NULL DEFAULT true,
     published_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
     created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),

@@ -174,3 +174,4 @@ export default function MarkdownRenderer({ content, className = "" }: Props) {
 
   return <div className={`prose-clean space-y-1 ${className}`}>{elements}</div>;
 }
+

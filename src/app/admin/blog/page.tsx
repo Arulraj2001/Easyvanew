@@ -29,8 +29,11 @@ import {
   Layers,
   ArrowRight,
   Eye,
+  UserCheck,
+  User,
+  Loader2,
 } from "lucide-react";
-import { BlogPost, Product, BlogFaqItem } from "@/lib/types";
+import { BlogPost, Product, BlogFaqItem, SiteSettings } from "@/lib/types";
 import ImageCropperModal from "@/components/ImageCropperModal";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
@@ -283,9 +286,21 @@ export default function AdminBlogPage() {
     is_published: true,
     published_at: new Date().toISOString().split("T")[0],
     featured_products: [],
-    author_name: "Murugan Boutique",
+    author_name: "Murugan Boutique & Artisan Collective",
     author_role: "Heritage Craft Curator",
     author_avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+    author_bio: "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
+  });
+
+  // Default Author Profile State
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [showAuthorModal, setShowAuthorModal] = useState(false);
+  const [savingAuthor, setSavingAuthor] = useState(false);
+  const [authorForm, setAuthorForm] = useState({
+    name: "Murugan Boutique & Artisan Collective",
+    role: "Heritage Craft Curator",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+    bio: "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
   });
 
   const fetchBlogPosts = async () => {
@@ -308,17 +323,68 @@ export default function AdminBlogPage() {
       const res = await fetch("/api/products");
       const data = await res.json();
       if (res.ok) {
-        setProducts(data.products || []);
+        setProducts(Array.isArray(data) ? data : (data.products || []));
       }
     } catch (err) {
       console.error("Failed to load products for blog links:", err);
     }
   };
 
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch("/api/settings");
+      if (res.ok) {
+        const s: SiteSettings = await res.json();
+        setSiteSettings(s);
+        if (s.default_blog_author_name) {
+          setAuthorForm({
+            name: s.default_blog_author_name,
+            role: s.default_blog_author_role || "Heritage Craft Curator",
+            avatar: s.default_blog_author_avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+            bio: s.default_blog_author_bio || "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load settings:", err);
+    }
+  };
+
   useEffect(() => {
     fetchBlogPosts();
     fetchProducts();
+    fetchSettings();
   }, []);
+
+  const handleSaveDefaultAuthor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingAuthor(true);
+    try {
+      const updatedSettings = {
+        ...(siteSettings || {}),
+        default_blog_author_name: authorForm.name,
+        default_blog_author_role: authorForm.role,
+        default_blog_author_avatar: authorForm.avatar,
+        default_blog_author_bio: authorForm.bio,
+      };
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedSettings),
+      });
+      if (res.ok) {
+        setSiteSettings(updatedSettings as SiteSettings);
+        setShowAuthorModal(false);
+        alert("Default Blog Author Profile saved successfully! Every new article will now automatically pre-fill with these credentials.");
+      } else {
+        alert("Failed to save author defaults.");
+      }
+    } catch (err: any) {
+      alert(err.message || "Network error while saving author profile");
+    } finally {
+      setSavingAuthor(false);
+    }
+  };
 
   // Title change syncs slug and SEO defaults if clean
   const handleTitleChange = (val: string) => {
@@ -466,9 +532,10 @@ export default function AdminBlogPage() {
       is_published: true,
       published_at: new Date().toISOString().split("T")[0],
       featured_products: [],
-      author_name: "Murugan Boutique",
-      author_role: "Heritage Craft Curator",
-      author_avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+      author_name: authorForm.name || siteSettings?.default_blog_author_name || "Murugan Boutique & Artisan Collective",
+      author_role: authorForm.role || siteSettings?.default_blog_author_role || "Heritage Craft Curator",
+      author_avatar: authorForm.avatar || siteSettings?.default_blog_author_avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+      author_bio: authorForm.bio || siteSettings?.default_blog_author_bio || "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
     });
     setEditorTab("content");
     setMarkdownView("write");
@@ -486,9 +553,10 @@ export default function AdminBlogPage() {
       canonical_url: p.canonical_url || `https://easyva.in/blog/${p.slug}`,
       faq_items: p.faq_items || [],
       reading_time: p.reading_time || `${p.read_time_minutes || 5} min read`,
-      author_name: p.author?.name || p.author_name || "Murugan Boutique",
-      author_role: p.author?.role || p.author_role || "Heritage Craft Curator",
-      author_avatar: p.author?.avatar || p.author_avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+      author_name: p.author_name || p.author?.name || authorForm.name || "Murugan Boutique",
+      author_role: p.author_role || p.author?.role || authorForm.role || "Heritage Craft Curator",
+      author_avatar: p.author_avatar || p.author?.avatar || authorForm.avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+      author_bio: p.author_bio || authorForm.bio || siteSettings?.default_blog_author_bio || "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
     });
     setEditorTab("content");
     setMarkdownView("write");
@@ -509,6 +577,10 @@ export default function AdminBlogPage() {
       ...prev,
       ...importPreviewData,
       id: prev.id || "",
+      author_name: importPreviewData.author_name || authorForm.name || "Murugan Boutique",
+      author_role: importPreviewData.author_role || authorForm.role || "Heritage Craft Curator",
+      author_avatar: authorForm.avatar || prev.author_avatar,
+      author_bio: authorForm.bio || prev.author_bio,
     }));
     setShowImportModal(false);
     setShowModal(true);
@@ -653,6 +725,17 @@ export default function AdminBlogPage() {
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>AI Import & Paste</span>
+          </button>
+
+          {/* Default Author Profile Button */}
+          <button
+            type="button"
+            onClick={() => setShowAuthorModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-300 transition-colors shadow-xs"
+            title="Configure default author details that automatically pre-fill every new article"
+          >
+            <UserCheck className="w-3.5 h-3.5 text-easyva-purple-600" />
+            <span>Author Profile</span>
           </button>
 
           {/* New Story Button */}
@@ -1080,6 +1163,135 @@ Example:
       )}
 
       {/* ========================================================================= */}
+      {/* DEFAULT AUTHOR PROFILE MODAL                                              */}
+      {/* ========================================================================= */}
+      {showAuthorModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white max-w-lg w-full rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl overflow-hidden my-auto animate-in zoom-in-95 duration-150">
+            <form onSubmit={handleSaveDefaultAuthor}>
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-purple-50 text-easyva-purple-700 flex items-center justify-center font-bold">
+                    <UserCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-slate-900">
+                      Default Blog Author Profile
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      Auto-fills into every newly composed or imported article automatically.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAuthorModal(false)}
+                  className="text-slate-400 hover:text-slate-700 text-xs font-bold"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
+              <div className="p-5 space-y-4 text-xs">
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Default Author / Guild Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={authorForm.name}
+                    onChange={(e) => setAuthorForm({ ...authorForm, name: e.target.value })}
+                    className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 font-bold focus:bg-white focus:border-easyva-purple-500 outline-none"
+                    placeholder="e.g. Murugan Boutique & Artisan Collective"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Author Role / Designation *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={authorForm.role}
+                    onChange={(e) => setAuthorForm({ ...authorForm, role: e.target.value })}
+                    className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none"
+                    placeholder="e.g. Heritage Craft Curator"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Avatar Image URL
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="url"
+                      value={authorForm.avatar}
+                      onChange={(e) => setAuthorForm({ ...authorForm, avatar: e.target.value })}
+                      className="flex-1 bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs focus:bg-white focus:border-easyva-purple-500 outline-none"
+                      placeholder="https://images.unsplash.com/..."
+                    />
+                    {authorForm.avatar && (
+                      <img
+                        src={authorForm.avatar}
+                        alt="Avatar Preview"
+                        className="w-10 h-10 rounded-full object-cover border border-slate-300 shrink-0 shadow-2xs"
+                      />
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-bold mb-1">
+                    Author Bio / Storyteller Note
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={authorForm.bio}
+                    onChange={(e) => setAuthorForm({ ...authorForm, bio: e.target.value })}
+                    className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none leading-relaxed"
+                    placeholder="Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide."
+                  />
+                  <span className="text-[10px] text-slate-400 mt-1 block">
+                    Strengthens Google E-E-A-T and artisan credibility on every published post.
+                  </span>
+                </div>
+              </div>
+
+              <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAuthorModal(false)}
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-200/70 font-bold text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingAuthor}
+                  className="px-5 py-2 bg-easyva-purple-600 hover:bg-easyva-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+                >
+                  {savingAuthor ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Profile...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserCheck className="w-3.5 h-3.5" />
+                      <span>Save Default Profile</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* FULL-FEATURED ARTICLE & SEO CMS MODAL                                     */}
       {/* ========================================================================= */}
       {showModal && (
@@ -1354,6 +1566,93 @@ Example:
                           )}
                         </div>
                       )}
+                    </div>
+
+                    {/* Author Byline & Storyteller Profile */}
+                    <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200 space-y-3 pt-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-easyva-purple-600" />
+                          <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                            Author Byline & Storyteller Profile
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData({
+                              ...formData,
+                              author_name: authorForm.name || "Murugan Boutique & Artisan Collective",
+                              author_role: authorForm.role || "Heritage Craft Curator",
+                              author_avatar: authorForm.avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+                              author_bio: authorForm.bio || "Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide.",
+                            });
+                          }}
+                          className="text-[11px] font-bold text-easyva-purple-600 hover:underline flex items-center gap-1"
+                        >
+                          <UserCheck className="w-3.5 h-3.5" />
+                          <span>Reset to Saved Author Defaults</span>
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">Author Name *</label>
+                          <input
+                            type="text"
+                            value={formData.author_name || ""}
+                            onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
+                            className="w-full bg-white p-2.5 rounded-xl border border-slate-300 text-slate-900 font-bold focus:border-easyva-purple-500 outline-none"
+                            placeholder="e.g. Murugan Boutique & Artisan Collective"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-slate-700 font-bold mb-1">Author Role / Designation</label>
+                          <input
+                            type="text"
+                            value={formData.author_role || ""}
+                            onChange={(e) => setFormData({ ...formData, author_role: e.target.value })}
+                            className="w-full bg-white p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:border-easyva-purple-500 outline-none"
+                            placeholder="e.g. Heritage Craft Curator"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs items-center">
+                        <div className="sm:col-span-2">
+                          <label className="block text-slate-700 font-bold mb-1">Avatar Image URL</label>
+                          <input
+                            type="url"
+                            value={formData.author_avatar || ""}
+                            onChange={(e) => setFormData({ ...formData, author_avatar: e.target.value })}
+                            className="w-full bg-white p-2.5 rounded-xl border border-slate-300 text-slate-900 text-xs focus:border-easyva-purple-500 outline-none"
+                            placeholder="https://..."
+                          />
+                        </div>
+                        <div className="flex items-center gap-2.5 pt-1 sm:pt-4">
+                          {formData.author_avatar && (
+                            <img
+                              src={formData.author_avatar}
+                              alt="Author Avatar"
+                              className="w-9 h-9 rounded-full object-cover border border-slate-300 shadow-2xs"
+                            />
+                          )}
+                          <span className="text-[10px] text-slate-400">
+                            Renders alongside author byline.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-xs">
+                        <label className="block text-slate-700 font-bold mb-1">Author Bio (Displays at bottom of article)</label>
+                        <textarea
+                          rows={2}
+                          value={formData.author_bio || ""}
+                          onChange={(e) => setFormData({ ...formData, author_bio: e.target.value })}
+                          className="w-full bg-white p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:border-easyva-purple-500 outline-none leading-relaxed"
+                          placeholder="Short bio explaining the artisan background, curation expertise, and commitment to genuine craftsmanship..."
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1729,54 +2028,87 @@ Example:
                 {/* ========================================================= */}
                 {editorTab === "products" && (
                   <div className="space-y-4">
-                    <div>
-                      <h4 className="text-xs font-bold text-slate-800 mb-1">
-                        Select Store Products to Embed in this Story
-                      </h4>
-                      <p className="text-[11px] text-slate-500">
-                        These products will automatically render as interactive shopping cards at the bottom of the article.
-                      </p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-xs font-black text-slate-800">
+                          Select Store Products to Embed in this Story
+                        </h4>
+                        <p className="text-[11px] text-slate-500">
+                          Selected items automatically render as interactive shopping cards at the bottom of the article.
+                        </p>
+                      </div>
+                      <span className="text-xs font-extrabold text-easyva-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
+                        {(formData.featured_products || []).length} Selected
+                      </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-96 overflow-y-auto p-2 border border-slate-200 rounded-2xl bg-slate-50/50">
-                      {products.map((p) => {
-                        const isSelected = formData.featured_products?.includes(p.slug);
-                        return (
-                          <label
-                            key={p.id}
-                            className={`flex items-start gap-2.5 p-2.5 rounded-xl border text-[11px] cursor-pointer transition-colors ${
-                              isSelected
-                                ? "bg-purple-50 border-easyva-purple-300 text-easyva-purple-900 font-bold"
-                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={(e) => {
-                                const cur = formData.featured_products || [];
-                                if (e.target.checked) {
-                                  setFormData({
-                                    ...formData,
-                                    featured_products: [...cur, p.slug],
-                                  });
-                                } else {
-                                  setFormData({
-                                    ...formData,
-                                    featured_products: cur.filter((s: string) => s !== p.slug),
-                                  });
-                                }
-                              }}
-                              className="mt-0.5 rounded text-easyva-purple-600 focus:ring-easyva-purple-500"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <span className="block truncate font-bold text-slate-900">{p.title}</span>
-                              <span className="text-[10px] text-slate-500">₹{p.price.toLocaleString("en-IN")}</span>
-                            </div>
-                          </label>
-                        );
-                      })}
-                    </div>
+                    {products.length === 0 ? (
+                      <div className="p-8 text-center bg-slate-50 border border-dashed border-slate-200 rounded-2xl space-y-2">
+                        <Layers className="w-8 h-8 text-slate-300 mx-auto" />
+                        <p className="text-xs font-bold text-slate-600">No store products loaded</p>
+                        <p className="text-[11px] text-slate-400">Loading catalog from store database...</p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-96 overflow-y-auto p-2 border border-slate-200 rounded-2xl bg-slate-50/50">
+                        {products.map((p) => {
+                          const isSelected = formData.featured_products?.includes(p.slug);
+                          const thumbUrl = p.images?.[0]?.image_url;
+                          return (
+                            <label
+                              key={p.id}
+                              className={`flex items-center gap-3 p-2.5 rounded-xl border text-[11px] cursor-pointer transition-all ${
+                                isSelected
+                                  ? "bg-purple-50 border-easyva-purple-400 text-easyva-purple-950 font-bold shadow-xs ring-1 ring-easyva-purple-300"
+                                  : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                              }`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  const cur = formData.featured_products || [];
+                                  if (e.target.checked) {
+                                    setFormData({
+                                      ...formData,
+                                      featured_products: [...cur, p.slug],
+                                    });
+                                  } else {
+                                    setFormData({
+                                      ...formData,
+                                      featured_products: cur.filter((s: string) => s !== p.slug),
+                                    });
+                                  }
+                                }}
+                                className="rounded text-easyva-purple-600 focus:ring-easyva-purple-500"
+                              />
+
+                              <div className="w-11 h-11 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0">
+                                {thumbUrl ? (
+                                  <img
+                                    src={thumbUrl}
+                                    alt={p.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-[9px] text-slate-400 font-bold">
+                                    No img
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <span className="block truncate font-bold text-slate-900 leading-tight">
+                                  {p.title}
+                                </span>
+                                <span className="text-[11px] font-extrabold text-easyva-purple-700 mt-0.5 block">
+                                  ₹{p.price?.toLocaleString("en-IN")}
+                                </span>
+                              </div>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
 

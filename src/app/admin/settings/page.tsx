@@ -15,7 +15,9 @@ import {
   Loader2,
   QrCode,
   Upload,
-  ArrowRight
+  ArrowRight,
+  UserCheck,
+  User
 } from "lucide-react";
 import { SiteSettings } from "@/lib/types";
 
@@ -535,6 +537,94 @@ export default function AdminSettingsPage() {
             />
             <span className="text-[10px] text-slate-400 mt-1 block">
               From GA4 Admin &gt; Data Streams (starts with G-). Loads gtag.js asynchronously without slowing down your store.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Default Blog Author & Artisan Curator Profile */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200/90 space-y-4 shadow-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-purple-50 text-easyva-purple-700 flex items-center justify-center">
+            <UserCheck className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+              4. Default Blog Author & Artisan Curator Profile
+            </h2>
+            <p className="text-xs text-slate-500">
+              Credentials and bio entered here automatically pre-fill all newly created or imported blog stories.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs pt-1">
+          <div>
+            <label className="block text-slate-700 font-bold mb-1 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-easyva-purple-600" />
+              <span>Default Author / Guild Name</span>
+            </label>
+            <input
+              type="text"
+              name="default_blog_author_name"
+              placeholder="e.g. Murugan Boutique & Artisan Collective"
+              value={settings.default_blog_author_name || ""}
+              onChange={handleInputChange}
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-slate-900 font-bold focus:border-easyva-purple-500 focus:bg-white outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-700 font-bold mb-1">
+              Author Role / Designation
+            </label>
+            <input
+              type="text"
+              name="default_blog_author_role"
+              placeholder="e.g. Heritage Craft Curator"
+              value={settings.default_blog_author_role || ""}
+              onChange={handleInputChange}
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-slate-900 focus:border-easyva-purple-500 focus:bg-white outline-none"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="block text-slate-700 font-bold mb-1">
+              Author Avatar URL
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="url"
+                name="default_blog_author_avatar"
+                placeholder="https://images.unsplash.com/photo-..."
+                value={settings.default_blog_author_avatar || ""}
+                onChange={handleInputChange}
+                className="flex-1 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-slate-900 text-xs focus:border-easyva-purple-500 focus:bg-white outline-none"
+              />
+              {settings.default_blog_author_avatar && (
+                <img
+                  src={settings.default_blog_author_avatar}
+                  alt="Author Avatar"
+                  className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="block text-slate-700 font-bold mb-1">
+              Author Bio / Artisan Curator Statement
+            </label>
+            <textarea
+              name="default_blog_author_bio"
+              rows={3}
+              placeholder="Curating authentic Southern Indian heritage arts, direct-from-artisan Thanjavur gilding, and living decor to elevate contemporary homes across India and worldwide."
+              value={settings.default_blog_author_bio || ""}
+              onChange={handleInputChange}
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-slate-900 focus:border-easyva-purple-500 focus:bg-white outline-none leading-relaxed"
+            />
+            <span className="text-[10px] text-slate-400 mt-1 block">
+              Reinforces Google E-E-A-T (Experience, Expertise, Authoritativeness, and Trustworthiness) by attaching verified artisan credibility to every post.
             </span>
           </div>
         </div>

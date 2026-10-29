@@ -46,6 +46,7 @@ export async function POST(request: Request) {
       author_name: body.author?.name || body.author_name || "Murugan Boutique & Artisan Collective",
       author_role: body.author?.role || body.author_role || "Heritage Craft Curator",
       author_avatar: body.author?.avatar || body.author_avatar || "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80",
+      author_bio: body.author_bio || body.author?.bio || "",
       read_time_minutes: Number(body.read_time_minutes) || Math.max(2, Math.ceil((body.content || "").split(/\s+/).length / 200)),
       reading_time: body.reading_time || `${Math.max(2, Math.ceil((body.content || "").split(/\s+/).length / 200))} min read`,
       author: {

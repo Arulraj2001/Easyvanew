@@ -816,6 +816,23 @@ export async function updateOrderStatus(
 }
 
 export async function getBlogPosts(includeUnpublished = false): Promise<BlogPost[]> {
+  // 1. If Supabase is configured, try querying Supabase cloud database
+  if (isSupabaseConfigured && supabase) {
+    try {
+      let query = supabase.from("blog_posts").select("*").order("published_at", { ascending: false });
+      if (!includeUnpublished) {
+        query = query.eq("is_published", true);
+      }
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        return data as BlogPost[];
+      }
+    } catch (e) {
+      console.warn("Supabase getBlogPosts fallback to local store:", e);
+    }
+  }
+
+  // 2. Fallback to local store / tmp
   const store = await loadStore();
   const posts = store.blog_posts || [];
   if (includeUnpublished) return posts;
@@ -823,17 +840,82 @@ export async function getBlogPosts(includeUnpublished = false): Promise<BlogPost
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const clean = slug.toLowerCase().trim();
+
+  // 1. If Supabase is configured, try querying Supabase cloud database
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("slug", clean)
+        .maybeSingle();
+
+      if (!error && data) {
+        return data as BlogPost;
+      }
+    } catch (e) {
+      console.warn("Supabase getBlogPostBySlug fallback to local store:", e);
+    }
+  }
+
+  // 2. Fallback to local store
   const store = await loadStore();
   const posts = store.blog_posts || [];
-  const clean = slug.toLowerCase().trim();
   const post = posts.find((p) => p.slug.toLowerCase().trim() === clean);
   return post || null;
 }
 
 export async function saveBlogPost(post: BlogPost): Promise<BlogPost> {
+  // 1. Save to Supabase if configured
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const rowToSave = {
+        id: post.id,
+        title: post.title,
+        slug: post.slug.toLowerCase().trim(),
+        category: post.category,
+        excerpt: post.excerpt,
+        content: post.content,
+        cover_image: post.cover_image,
+        primary_keyword: post.primary_keyword || null,
+        secondary_keywords: post.secondary_keywords || [],
+        meta_title: post.meta_title || post.title,
+        meta_description: post.meta_description || post.excerpt,
+        canonical_url: post.canonical_url || null,
+        faq_items: post.faq_items || [],
+        tags: post.tags || [],
+        featured_products: post.featured_products || [],
+        reading_time: post.reading_time || "5 min read",
+        read_time_minutes: post.read_time_minutes || 5,
+        author_name: post.author_name || post.author?.name || "Murugan Boutique",
+        author_role: post.author_role || post.author?.role || "Heritage Craft Curator",
+        author_avatar: post.author_avatar || post.author?.avatar || null,
+        author_bio: post.author_bio || post.author?.bio || null,
+        is_published: post.is_published,
+        published_at: post.published_at,
+        updated_at: new Date().toISOString(),
+      };
+
+      let { error } = await supabase.from("blog_posts").upsert(rowToSave, { onConflict: "id" });
+      if (error && error.message && error.message.includes("author_bio")) {
+        // Fallback if remote Supabase schema has not run the latest migration yet
+        const { author_bio: _, ...rowWithoutBio } = rowToSave;
+        const retry = await supabase.from("blog_posts").upsert(rowWithoutBio, { onConflict: "id" });
+        error = retry.error;
+      }
+      if (error) {
+        console.error("Supabase saveBlogPost upsert error:", error);
+      }
+    } catch (e) {
+      console.warn("Supabase saveBlogPost exception:", e);
+    }
+  }
+
+  // 2. Dual-save to local store / tmp
   const store = await loadStore();
   if (!store.blog_posts) store.blog_posts = [];
-  const idx = store.blog_posts.findIndex((p) => p.id === post.id);
+  const idx = store.blog_posts.findIndex((p) => p.id === post.id || p.slug.toLowerCase() === post.slug.toLowerCase());
   if (idx > -1) {
     store.blog_posts[idx] = post;
   } else {
@@ -844,6 +926,16 @@ export async function saveBlogPost(post: BlogPost): Promise<BlogPost> {
 }
 
 export async function deleteBlogPost(id: string): Promise<boolean> {
+  // 1. Delete from Supabase if configured
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.from("blog_posts").delete().eq("id", id);
+    } catch (e) {
+      console.warn("Supabase deleteBlogPost error:", e);
+    }
+  }
+
+  // 2. Delete from local store
   const store = await loadStore();
   if (!store.blog_posts) return true;
   store.blog_posts = store.blog_posts.filter((p) => p.id !== id);
