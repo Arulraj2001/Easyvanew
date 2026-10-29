@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Layers,
@@ -15,9 +15,10 @@ import {
   ExternalLink,
   BookOpen,
   HardDrive,
-  LogOut
+  LogOut,
+  Sparkles,
+  Tag
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useCustomerAuth } from "@/context/CustomerAuthContext";
 
 export default function AdminSidebar() {
@@ -32,48 +33,75 @@ export default function AdminSidebar() {
     router.replace("/admin/login");
   };
 
-  const navLinks = [
+  const navSections = [
     {
-      href: "/admin",
-      label: "Overview",
-      icon: LayoutDashboard,
-      exact: true,
+      title: "Store Management",
+      links: [
+        {
+          href: "/admin",
+          label: "Dashboard Overview",
+          icon: LayoutDashboard,
+          exact: true,
+        },
+        {
+          href: "/admin/orders",
+          label: "Orders & Verification",
+          icon: ShoppingBag,
+          exact: false,
+        },
+        {
+          href: "/admin/products",
+          label: "Products & Inventory",
+          icon: Package,
+          exact: false,
+        },
+        {
+          href: "/admin/categories",
+          label: "Categories & Tree",
+          icon: Layers,
+          exact: false,
+        },
+      ],
     },
     {
-      href: "/admin/categories",
-      label: "Categories & Tree",
-      icon: Layers,
-      exact: false,
+      title: "Storefront & Marketing",
+      links: [
+        {
+          href: "/admin/banners",
+          label: "Hero Banners",
+          icon: Sparkles,
+          exact: false,
+        },
+        {
+          href: "/admin/coupons",
+          label: "Discount Coupons",
+          icon: Tag,
+          exact: false,
+        },
+        {
+          href: "/admin/blog",
+          label: "Artisan Blog & Stories",
+          icon: BookOpen,
+          exact: false,
+        },
+        {
+          href: "/admin/storage",
+          label: "Media Storage (1GB)",
+          icon: HardDrive,
+          exact: false,
+        },
+      ],
     },
     {
-      href: "/admin/products",
-      label: "Products & Catalog",
-      icon: Package,
-      exact: false,
-    },
-    {
-      href: "/admin/orders",
-      label: "Orders & Verification",
-      icon: ShoppingBag,
-      exact: false,
-    },
-    {
-      href: "/admin/blog",
-      label: "Artisan Blog & SEO",
-      icon: BookOpen,
-      exact: false,
-    },
-    {
-      href: "/admin/storage",
-      label: "Media & Storage (1GB)",
-      icon: HardDrive,
-      exact: false,
-    },
-    {
-      href: "/admin/settings",
-      label: "Store & Public Pages",
-      icon: Settings,
-      exact: false,
+      title: "Configuration",
+      links: [
+        {
+          href: "/admin/settings",
+          label: "Store Settings & UPI",
+          icon: Settings,
+          exact: false,
+        },
+      ],
     },
   ];
 
@@ -85,8 +113,8 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-full md:w-64 bg-white border-r border-slate-200/90 flex-shrink-0 flex flex-col justify-between p-4 sm:p-6 shadow-xs">
-      <div className="space-y-6">
+    <aside className="w-full md:w-64 bg-white border-r border-slate-200/90 flex-shrink-0 flex flex-col justify-between p-4 sm:p-5 shadow-xs">
+      <div className="space-y-5">
         {/* Brand Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <Link href="/admin" className="flex items-center gap-2.5">
@@ -111,48 +139,58 @@ export default function AdminSidebar() {
         </div>
 
         {/* Operational Status Pill */}
-        <div className="px-3.5 py-2.5 bg-purple-50/80 border border-purple-200/70 rounded-xl text-[11px] text-purple-900 font-medium flex items-center gap-2">
-          <Zap className="w-4 h-4 text-purple-600 flex-shrink-0" />
-          <span>Direct UPI Settlement Active</span>
+        <div className="px-3 py-2 bg-purple-50/80 border border-purple-200/70 rounded-xl text-[11px] text-purple-900 font-medium flex items-center gap-2">
+          <Zap className="w-3.5 h-3.5 text-purple-600 flex-shrink-0" />
+          <span>Direct UPI Active • Zero Fees</span>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="space-y-1">
-          {navLinks.map((link) => {
-            const Icon = link.icon;
-            const active = isLinkActive(link.href, link.exact);
+        {/* Organized Navigation Sections */}
+        <nav className="space-y-4">
+          {navSections.map((section, idx) => (
+            <div key={idx} className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 px-3 block">
+                {section.title}
+              </span>
 
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                  active
-                    ? "bg-easyva-purple-50 text-easyva-purple-700 font-bold border border-easyva-purple-200/60 shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-                }`}
-              >
-                <Icon
-                  className={`w-4 h-4 flex-shrink-0 ${
-                    active ? "text-easyva-purple-600" : "text-slate-400"
-                  }`}
-                />
-                <span>{link.label}</span>
-              </Link>
-            );
-          })}
+              <div className="space-y-0.5">
+                {section.links.map((link) => {
+                  const Icon = link.icon;
+                  const active = isLinkActive(link.href, link.exact);
+
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                        active
+                          ? "bg-easyva-purple-50 text-easyva-purple-700 font-bold border border-easyva-purple-200/70 shadow-2xs"
+                          : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+                      }`}
+                    >
+                      <Icon
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          active ? "text-easyva-purple-600" : "text-slate-400"
+                        }`}
+                      />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </div>
 
-      {/* Footer Quick Action to Live Store */}
-      <div className="pt-6 border-t border-slate-100 space-y-2">
+      {/* Footer Quick Action to Live Store & Sign Out */}
+      <div className="pt-4 border-t border-slate-100 space-y-2 mt-4">
         <Link
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+          className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
         >
-          <Store className="w-4 h-4" />
+          <Store className="w-3.5 h-3.5" />
           <span>View Public Store</span>
           <ExternalLink className="w-3 h-3 text-slate-400 ml-auto" />
         </Link>
@@ -164,11 +202,10 @@ export default function AdminSidebar() {
           <LogOut className="w-3.5 h-3.5" />
           <span>Sign Out Admin</span>
         </button>
-        <p className="text-[10px] text-center text-slate-400">
-          Easyva Studio v2.4 • Light Theme
+        <p className="text-[10px] text-center text-slate-400 font-mono">
+          Easyva Studio v2.4 • Coimbatore
         </p>
       </div>
     </aside>
   );
 }
-
