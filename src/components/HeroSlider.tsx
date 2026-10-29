@@ -44,18 +44,18 @@ export default function HeroSlider({ banners }: HeroSliderProps) {
                 isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
               }`}
             >
-              {/* Background Image */}
+              {/* Background Image - Clean natural brightness */}
               <Image
                 src={banner.image_url}
                 alt={banner.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 1380px"
                 priority={idx === 0}
-                className="object-cover object-center brightness-[0.55]"
+                className="object-cover object-center brightness-[0.92]"
               />
 
-              {/* Gradient Overlay for Text Readability */}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-slate-950/40 to-transparent" />
+              {/* Gentle Translucent Gradient Overlay for Text Contrast */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/65 via-slate-950/25 to-transparent" />
 
               {/* Content Box */}
               <div className="relative z-20 h-full flex flex-col justify-center max-w-xl px-6 sm:px-12 md:px-16 text-white space-y-2 sm:space-y-3">

@@ -45,9 +45,9 @@ export default function PromoGrid() {
               alt={promo.title}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-cover object-center brightness-[0.55] group-hover:scale-105 group-hover:brightness-[0.45] transition-all duration-500"
+              className="object-cover object-center brightness-[0.90] group-hover:scale-105 group-hover:brightness-[0.95] transition-all duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/25 to-transparent" />
 
             <div className="relative z-10 space-y-1.5">
               <span

@@ -9,6 +9,9 @@ import ProductCard from "@/components/ProductCard";
 import HomeFaqAndHeritage from "@/components/HomeFaqAndHeritage";
 import { getCategories, getProducts, getSiteSettings } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   const [categories, allProducts, settings] = await Promise.all([
     getCategories(),

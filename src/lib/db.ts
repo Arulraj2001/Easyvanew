@@ -944,11 +944,44 @@ export async function deleteBlogPost(id: string): Promise<boolean> {
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {
+  // 1. Check Supabase cloud database if configured
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", "easyva_main")
+        .maybeSingle();
+
+      if (!error && data) {
+        return data as SiteSettings;
+      }
+    } catch (e) {
+      console.warn("Supabase getSiteSettings fallback to local store:", e);
+    }
+  }
+
+  // 2. Fallback to local store
   const store = await loadStore();
   return store.settings;
 }
 
 export async function updateSiteSettings(settings: Partial<SiteSettings>): Promise<SiteSettings> {
+  // 1. Sync with Supabase cloud database if configured
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const rowToUpsert = {
+        id: "easyva_main",
+        ...settings,
+        updated_at: new Date().toISOString(),
+      };
+      await supabase.from("site_settings").upsert(rowToUpsert, { onConflict: "id" });
+    } catch (e) {
+      console.warn("Supabase updateSiteSettings error:", e);
+    }
+  }
+
+  // 2. Dual-save to local store / tmp
   const store = await loadStore();
   store.settings = {
     ...store.settings,
