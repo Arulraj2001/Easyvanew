@@ -128,7 +128,7 @@ export default function CartDrawer() {
                 key={item.product.id}
                 className="flex gap-3.5 p-3 bg-slate-50/70 rounded-2xl border border-slate-100"
               >
-                <div className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-slate-100">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200 shadow-2xs">
                   <Image
                     src={
                       item.product.images?.[0]?.image_url ||
@@ -136,7 +136,7 @@ export default function CartDrawer() {
                     }
                     alt={item.product.title}
                     fill
-                    sizes="80px"
+                    sizes="(max-width: 640px) 64px, 80px"
                     className="object-cover"
                   />
                 </div>

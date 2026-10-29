@@ -64,7 +64,7 @@ export default function FloatingWhatsApp({ settings }: FloatingWhatsAppProps) {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Easyva on WhatsApp"
-        className="relative flex items-center justify-center w-13 h-13 sm:w-14 sm:h-14 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none ring-4 ring-emerald-500/20"
+        className="relative flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none ring-4 ring-emerald-500/20"
       >
         {/* Pulsing halo */}
         <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-30 animate-ping -z-10" />
