@@ -58,13 +58,38 @@ export async function POST(request: Request) {
       featured_product_ids: Array.isArray(body.featured_products) ? body.featured_products : [],
       published_at: body.published_at || new Date().toISOString().split("T")[0],
       is_published: body.is_published !== undefined ? Boolean(body.is_published) : true,
-      meta_title: body.seo?.meta_title || body.title,
-      meta_description: body.seo?.meta_description || body.excerpt,
-      meta_keywords: Array.isArray(body.seo?.keywords) ? body.seo.keywords : ["Tamil Nadu handicrafts", "artisans", "authentic home decor"],
+      primary_keyword: body.primary_keyword || body.seo?.primary_keyword || "",
+      secondary_keywords: Array.isArray(body.secondary_keywords)
+        ? body.secondary_keywords
+        : Array.isArray(body.seo?.secondary_keywords)
+        ? body.seo.secondary_keywords
+        : typeof body.secondary_keywords === "string"
+        ? body.secondary_keywords.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : [],
+      meta_title: body.meta_title || body.seo?.meta_title || body.title,
+      meta_description: body.meta_description || body.seo?.meta_description || body.excerpt || "",
+      canonical_url: body.canonical_url || body.seo?.canonical_url || "",
+      faq_items: Array.isArray(body.faq_items) ? body.faq_items : [],
+      meta_keywords: Array.isArray(body.seo?.keywords)
+        ? body.seo.keywords
+        : Array.isArray(body.meta_keywords)
+        ? body.meta_keywords
+        : ["Tamil Nadu handicrafts", "artisans", "authentic home decor"],
       seo: {
-        meta_title: body.seo?.meta_title || body.title,
-        meta_description: body.seo?.meta_description || body.excerpt,
-        keywords: Array.isArray(body.seo?.keywords) ? body.seo.keywords : ["Tamil Nadu handicrafts", "artisans", "authentic home decor"],
+        primary_keyword: body.primary_keyword || body.seo?.primary_keyword || "",
+        secondary_keywords: Array.isArray(body.secondary_keywords)
+          ? body.secondary_keywords
+          : Array.isArray(body.seo?.secondary_keywords)
+          ? body.seo.secondary_keywords
+          : [],
+        meta_title: body.meta_title || body.seo?.meta_title || body.title,
+        meta_description: body.meta_description || body.seo?.meta_description || body.excerpt || "",
+        canonical_url: body.canonical_url || body.seo?.canonical_url || "",
+        keywords: Array.isArray(body.seo?.keywords)
+          ? body.seo.keywords
+          : Array.isArray(body.tags)
+          ? body.tags
+          : ["Tamil Nadu handicrafts", "artisans", "authentic home decor"],
       },
     };
 

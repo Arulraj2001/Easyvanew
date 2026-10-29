@@ -13,6 +13,8 @@ import {
   Check,
   ShieldCheck,
   ChevronRight,
+  HelpCircle,
+  Hash,
 } from "lucide-react";
 
 interface Props {
@@ -34,20 +36,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const title = post.seo?.meta_title || post.title;
-  const description = post.seo?.meta_description || post.excerpt;
+  const title = post.meta_title || post.seo?.meta_title || post.title;
+  const description = post.meta_description || post.seo?.meta_description || post.excerpt;
+  const allKeywords = [
+    post.primary_keyword,
+    ...(post.secondary_keywords || []),
+    ...(post.seo?.keywords || []),
+    ...(post.tags || []),
+  ].filter(Boolean) as string[];
 
   return {
     title: `${title} | Easyva Artisan Stories`,
     description,
-    keywords: post.seo?.keywords || post.tags,
+    keywords: Array.from(new Set(allKeywords)),
     alternates: {
-      canonical: `https://easyva.in/blog/${post.slug}`,
+      canonical: post.canonical_url || `https://easyva.in/blog/${post.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://easyva.in/blog/${post.slug}`,
+      url: post.canonical_url || `https://easyva.in/blog/${post.slug}`,
       type: "article",
       publishedTime: post.published_at,
       authors: [post.author?.name || post.author_name || "Murugan Boutique"],
@@ -199,8 +207,8 @@ export default async function BlogPostPage({ params }: Props) {
   const blogPostingJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
+    headline: post.meta_title || post.title,
+    description: post.meta_description || post.excerpt,
     image: [post.cover_image],
     datePublished: post.published_at,
     dateModified: post.published_at,
@@ -220,10 +228,55 @@ export default async function BlogPostPage({ params }: Props) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://easyva.in/blog/${post.slug}`,
+      "@id": post.canonical_url || `https://easyva.in/blog/${post.slug}`,
     },
     articleSection: post.category,
-    keywords: post.tags.join(", "),
+    keywords: [post.primary_keyword, ...(post.secondary_keywords || []), ...(post.tags || [])]
+      .filter(Boolean)
+      .join(", "),
+  };
+
+  // Schema.org FAQPage JSON-LD (enables Google SERP rich dropdowns)
+  const faqPageJsonLd =
+    post.faq_items && post.faq_items.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: post.faq_items.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
+  // Schema.org BreadcrumbList JSON-LD
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://easyva.in",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Artisan Stories",
+        item: "https://easyva.in/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: post.canonical_url || `https://easyva.in/blog/${post.slug}`,
+      },
+    ],
   };
 
   return (
@@ -231,6 +284,16 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
+      />
+      {faqPageJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
@@ -335,6 +398,44 @@ export default async function BlogPostPage({ params }: Props) {
             </div>
           )}
         </div>
+
+        {/* Frequently Asked Questions (Google FAQPage Structured Data Accordion) */}
+        {post.faq_items && post.faq_items.length > 0 && (
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xs space-y-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-easyva-purple-700 flex items-center justify-center font-bold border border-easyva-purple-200">
+                <HelpCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
+                  Frequently Asked Questions
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Key insights on regional craft authenticity, sourcing, and care instructions.
+                </p>
+              </div>
+            </div>
+
+            <div className="divide-y divide-slate-100 space-y-3 pt-2">
+              {post.faq_items.map((faq, idx) => (
+                <details
+                  key={idx}
+                  className="group pt-3 first:pt-0 rounded-2xl p-3.5 hover:bg-slate-50/80 transition-colors"
+                >
+                  <summary className="flex items-center justify-between font-bold text-slate-900 text-sm sm:text-base cursor-pointer list-none select-none">
+                    <span className="pr-4">{faq.question}</span>
+                    <span className="text-slate-400 group-open:rotate-180 transition-transform duration-200 text-xs shrink-0">
+                      ▼
+                    </span>
+                  </summary>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mt-2.5 pt-2 border-t border-slate-100 font-normal">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Featured Products Mentioned in Story */}
         {featuredProducts.length > 0 && (

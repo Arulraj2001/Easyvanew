@@ -117,6 +117,11 @@ export interface SiteSettings {
   whatsapp_number?: string;
 }
 
+export interface BlogFaqItem {
+  question: string;
+  answer: string;
+}
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -135,8 +140,13 @@ export interface BlogPost {
   published_at: string;
   featured_product_ids?: string[];
   featured_products?: string[];
+  // Comprehensive SEO Suite
+  primary_keyword?: string;
+  secondary_keywords?: string[];
   meta_title?: string;
   meta_description?: string;
+  canonical_url?: string;
+  faq_items?: BlogFaqItem[];
   meta_keywords?: string[];
   author?: {
     name: string;
@@ -147,6 +157,9 @@ export interface BlogPost {
     meta_title?: string;
     meta_description?: string;
     keywords?: string[];
+    primary_keyword?: string;
+    secondary_keywords?: string[];
+    canonical_url?: string;
   };
 }
 
