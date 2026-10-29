@@ -74,10 +74,17 @@ export function generateStoreJsonLd(settings?: SiteSettings) {
           url: `${SITE_URL}/easyva-logo.png`,
           caption: storeName,
         },
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Coimbatore",
+          addressRegion: "Tamil Nadu",
+          postalCode: "641001",
+          addressCountry: "IN",
+        },
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: settings?.support_phone || "+91 98765 43210",
-          email: settings?.support_email || "contact@easyva.in",
+          telephone: settings?.support_phone || "+91 8072 415 334",
+          email: settings?.support_email || "muruganboutiqueandcosmetics@gmail.com",
           contactType: "Customer Support & Artisan Guild",
           areaServed: [
             "Tamil Nadu",

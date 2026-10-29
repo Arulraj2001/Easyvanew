@@ -452,12 +452,41 @@ export default function AdminSettingsPage() {
 
           <div>
             <label className="block text-slate-700 font-bold mb-1">
-              Customer Support Phone
+              Customer Support Phone & WhatsApp
             </label>
             <input
               type="text"
               name="support_phone"
+              placeholder="+91 8072 415 334"
               value={settings.support_phone}
+              onChange={handleInputChange}
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-700 font-bold mb-1">
+              Official Contact Email
+            </label>
+            <input
+              type="email"
+              name="support_email"
+              placeholder="muruganboutiqueandcosmetics@gmail.com"
+              value={settings.support_email}
+              onChange={handleInputChange}
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="block text-slate-700 font-bold mb-1">
+              Headquarters Studio Address (Coimbatore)
+            </label>
+            <input
+              type="text"
+              name="store_address"
+              placeholder="Coimbatore, Tamil Nadu - 641001, India"
+              value={settings.store_address || ""}
               onChange={handleInputChange}
               className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none"
             />
@@ -465,14 +494,15 @@ export default function AdminSettingsPage() {
 
           <div>
             <label className="block text-slate-700 font-bold mb-1">
-              Customer Support Email
+              Official Instagram Profile URL
             </label>
             <input
-              type="email"
-              name="support_email"
-              value={settings.support_email}
+              type="url"
+              name="instagram_url"
+              placeholder="https://instagram.com/easyva.artisan"
+              value={settings.instagram_url || ""}
               onChange={handleInputChange}
-              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none"
+              className="w-full bg-slate-50 p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:bg-white focus:border-easyva-purple-500 outline-none font-mono"
             />
           </div>
         </div>

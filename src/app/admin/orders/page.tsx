@@ -549,8 +549,8 @@ export default function AdminOrdersPage() {
                   <p className="text-xs text-slate-500">
                     Handcrafted Art, Jewellery & Living Decor
                   </p>
-                  <p className="text-[11px] text-slate-400">
-                    orders@easyva.in | www.easyva.in
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    muruganboutiqueandcosmetics@gmail.com | +91 8072 415 334
                   </p>
                 </div>
 

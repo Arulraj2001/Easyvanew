@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
             <div>
               <h2 className="text-base font-bold text-slate-900 mb-2">4. Your Data Rights & Contact</h2>
               <p>
-                Under the DPDP Act 2023, you retain the right to review, update, or request deletion of your order contact history from our customer databases by contacting our privacy compliance desk at <code className="text-easyva-purple-700 font-bold font-mono">privacy@easyva.in</code>.
+                Under the DPDP Act 2023, you retain the right to review, update, or request deletion of your order contact history from our customer databases by contacting our privacy compliance desk at <code className="text-easyva-purple-700 font-bold font-mono">muruganboutiqueandcosmetics@gmail.com</code>.
               </p>
             </div>
           </div>

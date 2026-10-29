@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                       type="tel"
                       name="phone"
                       required
-                      placeholder="e.g. 9876543210"
+                      placeholder="e.g. 8072415334"
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full text-xs p-3 rounded-xl border border-slate-200 focus:border-easyva-purple-500 focus:outline-none"

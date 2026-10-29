@@ -542,8 +542,9 @@ export default function Header({ categories = [], settings }: HeaderProps) {
 
                   {/* Direct Concierge Support Footer */}
                   <div className="pt-2 text-[10px] text-slate-400 text-center space-y-0.5">
-                    <p>Certified Tamil Nadu Artisan Guild</p>
-                    <p className="font-mono text-slate-500">{settings?.support_email || "contact@easyva.in"}</p>
+                    <p>Certified Tamil Nadu Artisan Guild • Coimbatore</p>
+                    <p className="font-mono text-slate-500">{settings?.support_email || "muruganboutiqueandcosmetics@gmail.com"}</p>
+                    <p className="font-mono text-slate-500">{settings?.support_phone || "+91 8072 415 334"}</p>
                   </div>
                 </div>
               </div>

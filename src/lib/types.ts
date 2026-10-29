@@ -112,6 +112,9 @@ export interface SiteSettings {
   google_analytics_id?: string;
   enable_cod?: boolean;
   custom_upi_qr_url?: string;
+  store_address?: string;
+  instagram_url?: string;
+  whatsapp_number?: string;
 }
 
 export interface BlogPost {

@@ -105,7 +105,7 @@ export default function ReturnsRefundsPage() {
                   Take a clear photograph or brief unboxing video clip showing the outer shipping label and damaged item.
                 </li>
                 <li>
-                  Email our support desk at <code className="text-easyva-purple-700 font-bold font-mono">support@easyva.in</code> or WhatsApp our studio helpdesk at <code className="text-easyva-purple-700 font-bold font-mono">+91 98765 43210</code> within <strong>48 hours</strong> of receipt.
+                  Email our support desk at <code className="text-easyva-purple-700 font-bold font-mono">muruganboutiqueandcosmetics@gmail.com</code> or WhatsApp our studio helpdesk at <code className="text-easyva-purple-700 font-bold font-mono">+91 8072 415 334</code> within <strong>48 hours</strong> of receipt.
                 </li>
                 <li>
                   Our artisan studio will dispatch an immediate replacement or process a 100% full refund at your discretion.

@@ -141,8 +141,11 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     store_tagline TEXT DEFAULT 'Handcrafted Art, Jewellery & Living Decor',
     merchant_upi_id TEXT NOT NULL DEFAULT 'easyva@upi',
     merchant_name TEXT NOT NULL DEFAULT 'Easyva Artisan Crafts',
-    support_phone TEXT DEFAULT '+91 98765 43210',
-    support_email TEXT DEFAULT 'support@easyva.in',
+    support_phone TEXT DEFAULT '+91 8072 415 334',
+    support_email TEXT DEFAULT 'muruganboutiqueandcosmetics@gmail.com',
+    store_address TEXT DEFAULT 'Coimbatore, Tamil Nadu - 641001, India',
+    instagram_url TEXT DEFAULT 'https://instagram.com/easyva.artisan',
+    whatsapp_number TEXT DEFAULT '+91 8072 415 334',
     announcement_bar TEXT DEFAULT '✨ Free Shipping Across India on Orders Above ₹999 | 100% Handcrafted',
     hero_banners JSONB DEFAULT '[
       {

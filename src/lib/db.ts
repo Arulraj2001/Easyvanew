@@ -422,8 +422,11 @@ const INITIAL_SEED: StoreData = {
     store_tagline: "Handcrafted Art, Jewellery & Living Decor",
     merchant_upi_id: "easyva@upi",
     merchant_name: "Easyva Artisan Crafts",
-    support_phone: "+91 98765 43210",
-    support_email: "support@easyva.in",
+    support_phone: "+91 8072 415 334",
+    support_email: "muruganboutiqueandcosmetics@gmail.com",
+    store_address: "Coimbatore, Tamil Nadu - 641001, India",
+    instagram_url: "https://instagram.com/easyva.artisan",
+    whatsapp_number: "+91 8072 415 334",
     announcement_bar: "✨ Free Express Delivery on Prepaid UPI Orders | 100% Handcrafted by Artisans",
     hero_banners: [
       {

@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import AuthModal from "@/components/AuthModal";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import { CustomerAuthProvider } from "@/context/CustomerAuthContext";
 import { Category, SiteSettings } from "@/lib/types";
 
@@ -37,10 +38,11 @@ export default function StoreLayoutWrapper({
     <CustomerAuthProvider>
       <Header categories={categories} settings={settings} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer settings={settings} />
       <CartDrawer />
       <MobileBottomNav />
       <AuthModal />
+      <FloatingWhatsApp settings={settings} />
     </CustomerAuthProvider>
   );
 }

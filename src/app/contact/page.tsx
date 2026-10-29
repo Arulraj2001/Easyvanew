@@ -73,8 +73,8 @@ export default function ContactPage() {
               </div>
               <h3 className="font-extrabold text-slate-900 text-sm">Email Support</h3>
               <p className="text-slate-500">For order inquiries & custom requests:</p>
-              <a href="mailto:contact@easyva.in" className="text-easyva-purple-700 font-bold block hover:underline break-all">
-                contact@easyva.in
+              <a href="mailto:muruganboutiqueandcosmetics@gmail.com" className="text-easyva-purple-700 font-bold block hover:underline break-all font-mono">
+                muruganboutiqueandcosmetics@gmail.com
               </a>
             </div>
 
@@ -84,19 +84,29 @@ export default function ContactPage() {
               </div>
               <h3 className="font-extrabold text-slate-900 text-sm">Helpline & WhatsApp</h3>
               <p className="text-slate-500">Mon – Sat, 9:30 AM to 6:30 PM IST:</p>
-              <span className="text-easyva-teal-800 font-bold block font-mono">
-                +91 98765 43210
-              </span>
+              <div className="space-y-1">
+                <a href="tel:+918072415334" className="text-easyva-teal-800 font-bold block font-mono hover:underline">
+                  +91 8072 415 334
+                </a>
+                <a
+                  href="https://wa.me/918072415334?text=Hi%20Easyva!%20I%20have%20an%20inquiry%20about%20your%20handcrafted%20products"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700"
+                >
+                  <span>Chat on WhatsApp →</span>
+                </a>
+              </div>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
               <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center">
                 <Building className="w-4 h-4" />
               </div>
-              <h3 className="font-extrabold text-slate-900 text-sm">Artisan Studio HQ</h3>
+              <h3 className="font-extrabold text-slate-900 text-sm">Headquarters & Studio</h3>
               <p className="text-slate-500">Registered Office:</p>
               <span className="text-slate-700 font-medium block">
-                Indiranagar 100ft Road, Bengaluru, Karnataka 560038
+                Coimbatore, Tamil Nadu - 641001, India
               </span>
             </div>
           </div>
@@ -151,7 +161,7 @@ export default function ContactPage() {
                     <label className="block text-slate-700 font-bold mb-1">Mobile Number</label>
                     <input
                       type="tel"
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 8072 415 334"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full bg-white p-2.5 rounded-xl border border-slate-300 text-slate-900 focus:border-easyva-purple-500 outline-none"
@@ -204,10 +214,11 @@ export default function ContactPage() {
             </h4>
             <p className="text-slate-300 leading-relaxed">
               Designation: <strong>Head of Customer Relations & Artisan Compliance</strong><br />
-              Entity: <strong>Easyva Artisan Crafts Pvt. Ltd.</strong><br />
-              Address: Indiranagar 100ft Road, Bengaluru, Karnataka 560038<br />
-              Email: <code className="text-easyva-purple-300 font-mono">grievance@easyva.in</code><br />
-              SLA Standard: All formal grievances acknowledged within 48 hours and resolved within 30 days.
+              Entity: <strong>Easyva Artisan Crafts</strong><br />
+              Headquarters: Coimbatore, Tamil Nadu - 641001, India<br />
+              Phone & WhatsApp: <code className="text-easyva-teal-300 font-mono">+91 8072 415 334</code><br />
+              Email: <code className="text-easyva-purple-300 font-mono">muruganboutiqueandcosmetics@gmail.com</code><br />
+              SLA Standard: All formal inquiries acknowledged within 24 hours.
             </p>
           </div>
         </div>

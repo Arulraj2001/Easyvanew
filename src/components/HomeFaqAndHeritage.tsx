@@ -39,7 +39,7 @@ export default function HomeFaqAndHeritage() {
     {
       question: "Can I commission custom paintings or bespoke dimensions?",
       answer:
-        "Yes! Many of our indie painters and ceramicists accept bespoke commissions. You can contact our artisan concierge at contact@easyva.in or through our Contact page with your requested dimensions, color palettes, and themes.",
+        "Yes! Many of our indie painters and ceramicists accept bespoke commissions. You can contact our artisan concierge at muruganboutiqueandcosmetics@gmail.com or via WhatsApp at +91 8072 415 334 with your requested dimensions, color palettes, and themes.",
     },
     {
       question: "What is your return policy if an item arrives damaged?",
