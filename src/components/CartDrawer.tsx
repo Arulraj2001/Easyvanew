@@ -61,8 +61,8 @@ export default function CartDrawer() {
         aria-hidden="true"
       />
 
-      {/* Slide-in Sheet from Right */}
-      <div className="fixed inset-y-0 right-0 w-full sm:max-w-md h-[100dvh] max-h-[100dvh] bg-white shadow-2xl z-10 flex flex-col overflow-hidden animate-drawer-right">
+      {/* Slide-in Sheet from Right (Side drawer with backdrop visible on the left) */}
+      <div className="fixed inset-y-0 right-0 w-[88vw] sm:w-[420px] max-w-md h-[100dvh] max-h-[100dvh] bg-white shadow-2xl z-10 flex flex-col overflow-hidden animate-drawer-right">
         {/* Pinned Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
           <div className="flex items-center gap-2">
