@@ -166,6 +166,7 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
     google_search_console_tag TEXT DEFAULT '',
     google_analytics_id TEXT DEFAULT '',
     enable_cod BOOLEAN NOT NULL DEFAULT true,
+    custom_upi_qr_url TEXT DEFAULT '',
     updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
 
@@ -188,6 +189,55 @@ CREATE TABLE IF NOT EXISTS public.customer_addresses (
 );
 
 CREATE INDEX IF NOT EXISTS idx_cust_addresses_customer ON public.customer_addresses(customer_id);
+
+-- -------------------------------------------------------------------------
+-- 7C. BLOG POSTS & ARTISAN SEO CMS
+-- -------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.blog_posts (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    category TEXT NOT NULL DEFAULT 'Artisan Traditions',
+    excerpt TEXT,
+    content TEXT NOT NULL,
+    cover_image TEXT,
+    primary_keyword TEXT,
+    secondary_keywords JSONB DEFAULT '[]'::jsonb,
+    meta_title TEXT,
+    meta_description TEXT,
+    canonical_url TEXT,
+    faq_items JSONB DEFAULT '[]'::jsonb,
+    tags JSONB DEFAULT '[]'::jsonb,
+    featured_products JSONB DEFAULT '[]'::jsonb,
+    reading_time TEXT DEFAULT '5 min read',
+    read_time_minutes INT DEFAULT 5,
+    author_name TEXT DEFAULT 'Murugan Boutique',
+    author_role TEXT DEFAULT 'Heritage Craft Curator',
+    author_avatar TEXT DEFAULT 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&auto=format&fit=crop&q=80',
+    is_published BOOLEAN NOT NULL DEFAULT true,
+    published_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON public.blog_posts(slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON public.blog_posts(is_published);
+
+-- -------------------------------------------------------------------------
+-- 7D. DISCOUNT COUPONS
+-- -------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.coupons (
+    id TEXT PRIMARY KEY,
+    code TEXT UNIQUE NOT NULL,
+    discount_percent INT NOT NULL CHECK (discount_percent > 0 AND discount_percent <= 100),
+    min_order_value NUMERIC(10, 2) DEFAULT 0,
+    is_active BOOLEAN NOT NULL DEFAULT true,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
+);
+
+CREATE INDEX IF NOT EXISTS idx_coupons_code ON public.coupons(code);
+CREATE INDEX IF NOT EXISTS idx_coupons_active ON public.coupons(is_active);
 
 -- -------------------------------------------------------------------------
 -- 8. INITIAL SEED DATA
@@ -229,6 +279,13 @@ INSERT INTO public.site_settings (id, store_name, merchant_upi_id, merchant_name
 VALUES ('easyva_main', 'Easyva', 'easyva@upi', 'Easyva Artisan Crafts')
 ON CONFLICT (id) DO NOTHING;
 
+-- Seed default coupons
+INSERT INTO public.coupons (id, code, discount_percent, min_order_value, is_active, description)
+VALUES 
+  ('coup-welcome10', 'WELCOME10', 10, 999.00, true, '10% discount on orders above ₹999'),
+  ('coup-artisan50', 'ARTISAN50', 50, 4999.00, true, 'Exclusive ₹500 off on bulk heritage orders')
+ON CONFLICT (code) DO NOTHING;
+
 -- -------------------------------------------------------------------------
 -- 9. ROW LEVEL SECURITY (RLS) POLICIES
 -- -------------------------------------------------------------------------
@@ -239,17 +296,21 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.customer_addresses ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.coupons ENABLE ROW LEVEL SECURITY;
 
 -- Customers can view, insert, update, delete their own addresses
 CREATE POLICY "Customer Own Addresses" ON public.customer_addresses FOR ALL
   USING (customer_id = auth.uid())
   WITH CHECK (customer_id = auth.uid());
 
--- Public can read active categories, published products, and site settings
+-- Public can read active categories, published products, site settings, blog posts and coupons
 CREATE POLICY "Public Read Categories" ON public.categories FOR SELECT USING (is_active = true);
 CREATE POLICY "Public Read Products" ON public.products FOR SELECT USING (is_published = true);
 CREATE POLICY "Public Read Product Images" ON public.product_images FOR SELECT USING (true);
 CREATE POLICY "Public Read Settings" ON public.site_settings FOR SELECT USING (true);
+CREATE POLICY "Public Read Blog Posts" ON public.blog_posts FOR SELECT USING (is_published = true);
+CREATE POLICY "Public Read Coupons" ON public.coupons FOR SELECT USING (is_active = true);
 
 -- Anyone can insert an order (Guest checkout or Customer)
 CREATE POLICY "Public Create Orders" ON public.orders FOR INSERT WITH CHECK (true);
@@ -272,5 +333,11 @@ CREATE POLICY "Admin Full Access Order Items" ON public.order_items FOR ALL
   USING (EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
 
 CREATE POLICY "Admin Full Access Settings" ON public.site_settings FOR ALL 
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
+
+CREATE POLICY "Admin Full Access Blog Posts" ON public.blog_posts FOR ALL 
+  USING (EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
+
+CREATE POLICY "Admin Full Access Coupons" ON public.coupons FOR ALL 
   USING (EXISTS (SELECT 1 FROM public.profiles WHERE profiles.id = auth.uid() AND profiles.role = 'admin'));
 
