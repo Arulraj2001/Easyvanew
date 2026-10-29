@@ -299,89 +299,58 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* Products Table (Light Theme) */}
+      {/* Products Display (Light Theme) */}
       {loading ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-slate-200/90 text-slate-400 text-xs">
           <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-easyva-purple-600" />
           Loading artisan catalog...
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
-                <tr>
-                  <th className="py-3.5 px-4">Creation Details</th>
-                  <th className="py-3.5 px-4">Price / Discount</th>
-                  <th className="py-3.5 px-4">Inventory</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4">Featured</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {filteredProducts.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-12 text-slate-400">
-                      No products match your search query.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredProducts.map((product) => {
-                    const img = product.images?.[0]?.image_url;
-                    return (
-                      <tr key={product.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
-                              {img ? (
-                                <Image
-                                  src={img}
-                                  alt={product.title}
-                                  fill
-                                  sizes="48px"
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                  <Package className="w-5 h-5" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="max-w-xs sm:max-w-md">
-                              <div className="font-bold text-slate-900 line-clamp-1">
-                                {product.title}
-                              </div>
-                              <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
-                                <span>SKU: {product.sku || "—"}</span>
-                                <span>•</span>
-                                <Link
-                                  href={`/product/${product.slug}`}
-                                  target="_blank"
-                                  className="text-easyva-purple-600 hover:underline flex items-center gap-0.5"
-                                >
-                                  <span>View</span>
-                                  <ExternalLink className="w-2.5 h-2.5" />
-                                </Link>
-                              </div>
-                            </div>
+        <>
+          {/* MOBILE CARD VIEW (Phone screens < 768px) */}
+          <div className="md:hidden space-y-3">
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-12 bg-white rounded-2xl border border-slate-200/90 text-slate-400 text-xs">
+                No products match your search query.
+              </div>
+            ) : (
+              filteredProducts.map((product) => {
+                const img = product.images?.[0]?.image_url;
+                return (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs space-y-3"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
+                        {img ? (
+                          <Image
+                            src={img}
+                            alt={product.title}
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <Package className="w-6 h-6" />
                           </div>
-                        </td>
+                        )}
+                      </div>
 
-                        <td className="py-3.5 px-4">
-                          <div className="font-extrabold text-slate-900 text-sm">
-                            ₹{product.price.toLocaleString("en-IN")}
-                          </div>
-                          {product.compare_at_price && (
-                            <span className="text-[11px] text-slate-400 line-through">
-                              ₹{product.compare_at_price.toLocaleString("en-IN")}
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="py-3.5 px-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span
-                            className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                            className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold ${
+                              product.is_published !== false
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {product.is_published !== false ? "Live" : "Draft"}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[9px] font-bold ${
                               product.stock > 5
                                 ? "bg-emerald-50 text-emerald-700"
                                 : product.stock > 0
@@ -391,66 +360,224 @@ export default function AdminProductsPage() {
                           >
                             {product.stock} in stock
                           </span>
-                        </td>
+                        </div>
 
-                        <td className="py-3.5 px-4">
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                              product.is_published !== false
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                : "bg-slate-100 text-slate-500 border border-slate-200"
-                            }`}
-                          >
-                            {product.is_published !== false ? "Live" : "Draft"}
+                        <h4 className="font-bold text-slate-900 text-sm mt-1 line-clamp-1">
+                          {product.title}
+                        </h4>
+
+                        <div className="flex items-baseline gap-2 mt-0.5">
+                          <span className="font-black text-slate-900 text-base">
+                            ₹{product.price.toLocaleString("en-IN")}
                           </span>
-                        </td>
+                          {product.compare_at_price && (
+                            <span className="text-xs text-slate-400 line-through">
+                              ₹{product.compare_at_price.toLocaleString("en-IN")}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-slate-400 font-mono ml-auto">
+                            SKU: {product.sku || "—"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
 
-                        <td className="py-3.5 px-4">
-                          <button
-                            onClick={() => handleToggleFeatured(product)}
-                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 ${
-                              product.is_featured
-                                ? "bg-easyva-purple-50 text-easyva-purple-700 border border-easyva-purple-200"
-                                : "bg-slate-100 text-slate-400 hover:text-slate-700 border border-slate-200"
-                            }`}
-                            title="Toggle Featured on Homepage"
-                          >
-                            <Sparkles className="w-3 h-3" />
-                            <span>{product.is_featured ? "Featured" : "Standard"}</span>
-                          </button>
-                        </td>
+                    {/* Mobile Action Buttons */}
+                    <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenModal(product)}
+                        className="flex-1 py-2 px-3 bg-easyva-purple-50 hover:bg-easyva-purple-100 text-easyva-purple-700 border border-easyva-purple-200 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </button>
 
-                        <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
-                          <button
-                            onClick={() => handleOpenModal(product)}
-                            className="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
-                            title="Edit Product"
-                          >
-                            <Edit2 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProduct(product.id, product.title)}
-                            disabled={deletingId === product.id}
-                            className="p-1.5 text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors"
-                            title="Delete Product"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleFeatured(product)}
+                        className={`p-2 rounded-xl text-xs font-bold border transition-colors flex items-center justify-center ${
+                          product.is_featured
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-slate-50 text-slate-400 border-slate-200"
+                        }`}
+                        title="Toggle Featured"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                      </button>
+
+                      <Link
+                        href={`/product/${product.slug}`}
+                        target="_blank"
+                        className="p-2 text-slate-500 hover:text-slate-800 bg-slate-50 rounded-xl border border-slate-200"
+                        title="View live product"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteProduct(product.id, product.title)}
+                        disabled={deletingId === product.id}
+                        className="p-2 text-rose-500 hover:text-rose-700 bg-rose-50 rounded-xl border border-rose-200"
+                        title="Delete Product"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
-        </div>
+
+          {/* DESKTOP TABLE VIEW (Screens ≥ 768px) */}
+          <div className="hidden md:block bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50/80 text-slate-600 uppercase tracking-wider font-bold border-b border-slate-200">
+                  <tr>
+                    <th className="py-3.5 px-4">Creation Details</th>
+                    <th className="py-3.5 px-4">Price / Discount</th>
+                    <th className="py-3.5 px-4">Inventory</th>
+                    <th className="py-3.5 px-4">Status</th>
+                    <th className="py-3.5 px-4">Featured</th>
+                    <th className="py-3.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {filteredProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center py-12 text-slate-400">
+                        No products match your search query.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredProducts.map((product) => {
+                      const img = product.images?.[0]?.image_url;
+                      return (
+                        <tr key={product.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-3">
+                              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0">
+                                {img ? (
+                                  <Image
+                                    src={img}
+                                    alt={product.title}
+                                    fill
+                                    sizes="48px"
+                                    className="object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                    <Package className="w-5 h-5" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="max-w-xs sm:max-w-md">
+                                <div className="font-bold text-slate-900 line-clamp-1">
+                                  {product.title}
+                                </div>
+                                <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-0.5">
+                                  <span>SKU: {product.sku || "—"}</span>
+                                  <span>•</span>
+                                  <Link
+                                    href={`/product/${product.slug}`}
+                                    target="_blank"
+                                    className="text-easyva-purple-600 hover:underline flex items-center gap-0.5"
+                                  >
+                                    <span>View</span>
+                                    <ExternalLink className="w-2.5 h-2.5" />
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <div className="font-extrabold text-slate-900 text-sm">
+                              ₹{product.price.toLocaleString("en-IN")}
+                            </div>
+                            {product.compare_at_price && (
+                              <span className="text-[11px] text-slate-400 line-through">
+                                ₹{product.compare_at_price.toLocaleString("en-IN")}
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[11px] font-bold ${
+                                product.stock > 5
+                                  ? "bg-emerald-50 text-emerald-700"
+                                  : product.stock > 0
+                                  ? "bg-amber-50 text-amber-700"
+                                  : "bg-rose-50 text-rose-700"
+                              }`}
+                            >
+                              {product.stock} in stock
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                product.is_published !== false
+                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  : "bg-slate-100 text-slate-500 border border-slate-200"
+                              }`}
+                            >
+                              {product.is_published !== false ? "Live" : "Draft"}
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-4">
+                            <button
+                              onClick={() => handleToggleFeatured(product)}
+                              className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 ${
+                                product.is_featured
+                                  ? "bg-easyva-purple-50 text-easyva-purple-700 border border-easyva-purple-200"
+                                  : "bg-slate-100 text-slate-400 hover:text-slate-700 border border-slate-200"
+                              }`}
+                              title="Toggle Featured on Homepage"
+                            >
+                              <Sparkles className="w-3 h-3" />
+                              <span>{product.is_featured ? "Featured" : "Standard"}</span>
+                            </button>
+                          </td>
+
+                          <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+                            <button
+                              onClick={() => handleOpenModal(product)}
+                              className="p-1.5 text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors"
+                              title="Edit Product"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product.id, product.title)}
+                              disabled={deletingId === product.id}
+                              className="p-1.5 text-rose-500 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors"
+                              title="Delete Product"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
 
-      {/* Product Modal (Responsive & Compact - Guaranteed No Top Cutoff) */}
+      {/* Product Modal (Responsive: Bottom Sheet on Mobile / Centered on Desktop) */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-center items-start sm:items-center p-2.5 sm:p-5 overflow-y-auto">
-          <div className="relative bg-white w-full max-w-2xl max-h-[92vh] sm:max-h-[88vh] rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden my-auto animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex justify-center items-end sm:items-center p-0 sm:p-5 overflow-y-auto">
+          <div className="relative bg-white w-full max-w-2xl h-[92vh] sm:h-auto sm:max-h-[88vh] rounded-t-3xl sm:rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
             {/* Pinned Sticky Header */}
             <div className="flex items-center justify-between px-5 py-3 sm:px-6 sm:py-3.5 border-b border-slate-100 bg-white flex-shrink-0">
               <div>

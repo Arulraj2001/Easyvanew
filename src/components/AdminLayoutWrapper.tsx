@@ -20,7 +20,7 @@ export default function AdminLayoutWrapper({ children }: { children: React.React
         <AdminSidebar />
 
         {/* Main Admin Content Workspace */}
-        <main className="flex-1 p-4 sm:p-8 max-w-7xl mx-auto w-full overflow-x-hidden bg-slate-50">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 pb-24 md:pb-8 max-w-7xl mx-auto w-full overflow-x-hidden bg-slate-50">
           {children}
         </main>
       </div>

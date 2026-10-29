@@ -48,24 +48,24 @@ export default async function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
           <Link
             href="/admin/products"
-            className="px-4 py-2.5 bg-easyva-purple-600 hover:bg-easyva-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
+            className="flex-1 sm:flex-initial justify-center px-4 py-2.5 bg-easyva-purple-600 hover:bg-easyva-purple-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5"
           >
-            <span>+ Add New Product</span>
+            <span>+ Add Product</span>
           </Link>
           <Link
             href="/admin/categories"
-            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200/80"
+            className="flex-1 sm:flex-initial justify-center px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200/80 flex items-center"
           >
-            + Add Category
+            <span>+ Category</span>
           </Link>
         </div>
       </div>
 
-      {/* Metric Cards Grid (Light Theme) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Metric Cards Grid (Responsive 2x2 on Mobile / 4x1 on Desktop) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1 */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-2 hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-500">

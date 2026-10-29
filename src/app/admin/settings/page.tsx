@@ -629,6 +629,35 @@ export default function AdminSettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Bottom Sticky Action Bar */}
+      <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200/90 shadow-xs">
+        <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+          Ready to apply store configurations?
+        </span>
+        <button
+          type="submit"
+          disabled={isSaving}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-easyva-purple-600 hover:bg-easyva-purple-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all disabled:opacity-50"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>Saving Changes...</span>
+            </>
+          ) : savedSuccess ? (
+            <>
+              <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+              <span>Saved Successfully!</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4" />
+              <span>Save Configuration</span>
+            </>
+          )}
+        </button>
+      </div>
     </form>
   );
 }

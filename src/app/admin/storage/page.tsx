@@ -335,8 +335,80 @@ export default function AdminStoragePage() {
           </div>
         </div>
 
-        {/* File Table */}
-        <div className="overflow-x-auto">
+        {/* Mobile Media Cards (< 768px) */}
+        <div className="md:hidden divide-y divide-slate-100">
+          {loading ? (
+            <div className="p-8 text-center text-slate-400">
+              <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-easyva-purple-600" />
+              Scanning storage directory and references...
+            </div>
+          ) : filteredFiles.length === 0 ? (
+            <div className="p-8 text-center text-slate-400">
+              <FileImage className="w-6 h-6 mx-auto mb-2 text-slate-300" />
+              No files found matching criteria.
+            </div>
+          ) : (
+            filteredFiles.map((file) => (
+              <div key={file.name} className="p-3.5 space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center shrink-0">
+                    <img
+                      src={file.url}
+                      alt={file.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-xs text-slate-900 truncate" title={file.name}>
+                      {file.name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
+                      <span className="font-mono font-bold text-slate-700">{file.sizeFormatted}</span>
+                      <span>•</span>
+                      <span>{file.category}</span>
+                    </div>
+                    <div className="mt-1">
+                      {file.isOrphan ? (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                          Orphan (Not Linked)
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                          Active In Use
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <a
+                      href={file.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="p-2 text-slate-500 hover:text-slate-900 bg-slate-50 rounded-lg border border-slate-200"
+                      title="View Original"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      onClick={() => handleDeleteFile(file.name)}
+                      disabled={actionLoading}
+                      className="p-2 text-rose-500 hover:text-rose-700 bg-rose-50 rounded-lg border border-rose-200"
+                      title="Delete File"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop File Table (≥ 768px) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-50 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
               <tr>

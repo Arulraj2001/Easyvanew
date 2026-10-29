@@ -353,10 +353,10 @@ export default function AdminCategoriesPage() {
         </div>
       )}
 
-      {/* Category Create/Edit Modal (Responsive & Compact) */}
+      {/* Category Create/Edit Modal (Responsive: Bottom Sheet on Mobile / Centered on Desktop) */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-5 overflow-y-auto">
-          <div className="bg-white max-w-md w-full max-h-[86vh] rounded-2xl sm:rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden my-auto animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-slate-900/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-5 overflow-y-auto">
+          <div className="bg-white max-w-md w-full h-[88vh] sm:h-auto sm:max-h-[86vh] rounded-t-3xl sm:rounded-3xl border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
             {/* Pinned Header */}
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-white flex-shrink-0">
               <h3 className="text-base font-extrabold text-slate-900">
