@@ -4,6 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import MobileMenuDrawer from "@/components/MobileMenuDrawer";
 import CartDrawer from "@/components/CartDrawer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import AuthModal from "@/components/AuthModal";
@@ -39,6 +40,7 @@ export default function StoreLayoutWrapper({
       <Header categories={categories} settings={settings} />
       <main className="flex-1">{children}</main>
       <Footer settings={settings} />
+      <MobileMenuDrawer categories={categories} settings={settings} />
       <CartDrawer />
       <MobileBottomNav />
       <AuthModal />
@@ -46,4 +48,3 @@ export default function StoreLayoutWrapper({
     </CustomerAuthProvider>
   );
 }
-

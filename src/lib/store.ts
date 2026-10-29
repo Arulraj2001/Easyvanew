@@ -5,9 +5,13 @@ import { Product, CartItem } from "./types";
 interface CartStore {
   items: CartItem[];
   isCartOpen: boolean;
+  isMobileMenuOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
+  openMobileMenu: () => void;
+  closeMobileMenu: () => void;
+  toggleMobileMenu: () => void;
   addItem: (product: Product, quantity?: number) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   removeItem: (productId: string) => void;
@@ -21,9 +25,24 @@ export const useCartStore = create<CartStore>()(
     (set, get) => ({
       items: [],
       isCartOpen: false,
-      openCart: () => set({ isCartOpen: true }),
+      isMobileMenuOpen: false,
+
+      openCart: () => set({ isCartOpen: true, isMobileMenuOpen: false }),
       closeCart: () => set({ isCartOpen: false }),
-      toggleCart: () => set((state) => ({ isCartOpen: !state.isCartOpen })),
+      toggleCart: () =>
+        set((state) => ({
+          isCartOpen: !state.isCartOpen,
+          isMobileMenuOpen: false,
+        })),
+
+      openMobileMenu: () => set({ isMobileMenuOpen: true, isCartOpen: false }),
+      closeMobileMenu: () => set({ isMobileMenuOpen: false }),
+      toggleMobileMenu: () =>
+        set((state) => ({
+          isMobileMenuOpen: !state.isMobileMenuOpen,
+          isCartOpen: false,
+        })),
+
       addItem: (product: Product, quantity = 1) => {
         set((state) => {
           const existingIndex = state.items.findIndex(
@@ -32,14 +51,20 @@ export const useCartStore = create<CartStore>()(
           if (existingIndex > -1) {
             const updatedItems = [...state.items];
             updatedItems[existingIndex].quantity += quantity;
-            return { items: updatedItems, isCartOpen: true };
+            return {
+              items: updatedItems,
+              isCartOpen: true,
+              isMobileMenuOpen: false,
+            };
           }
           return {
             items: [...state.items, { product, quantity }],
             isCartOpen: true,
+            isMobileMenuOpen: false,
           };
         });
       },
+
       updateQuantity: (productId: string, quantity: number) => {
         set((state) => {
           if (quantity <= 0) {
@@ -54,15 +79,19 @@ export const useCartStore = create<CartStore>()(
           };
         });
       },
+
       removeItem: (productId: string) => {
         set((state) => ({
           items: state.items.filter((item) => item.product.id !== productId),
         }));
       },
+
       clearCart: () => set({ items: [] }),
+
       getTotalItems: () => {
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
+
       getTotalPrice: () => {
         return get().items.reduce(
           (total, item) => total + item.product.price * item.quantity,
@@ -72,7 +101,8 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: "easyva_cart_storage",
+      // Only persist shopping cart items in localStorage, modal/drawer UI states reset cleanly
+      partialize: (state) => ({ items: state.items }),
     }
   )
 );
-
