@@ -1,0 +1,66 @@
+name: Keep Supabase & Store Alive
+
+on:
+  schedule:
+    # Runs at 05:00 UTC every 4 days (Days 1, 5, 9, 13, 17, 21, 25, 29 of the month)
+    # Well within Supabase's 7-day inactivity pause threshold
+    - cron: '0 5 */4 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab anytime
+
+jobs:
+  keep-alive:
+    name: Ping Supabase Database & Store API
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping Supabase Database via PostgREST
+        id: ping-supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          echo "=================================================="
+          echo "Timestamp: $(date -u)"
+          echo "=================================================="
+          
+          if [ -n "$SUPABASE_URL" ] && [ -n "$SUPABASE_ANON_KEY" ]; then
+            # Strip trailing slash if present
+            CLEAN_URL="${SUPABASE_URL%/}"
+            echo "Pinging Supabase Database at $CLEAN_URL..."
+            
+            # Query site_settings table (or categories) to trigger an active PostgreSQL engine query
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$CLEAN_URL/rest/v1/site_settings?select=id&limit=1" \
+              -H "apikey: $SUPABASE_ANON_KEY" \
+              -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+            
+            echo "Supabase PostgREST Response Status: $HTTP_STATUS"
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+              echo "✅ Supabase database successfully queried! Inactivity timer reset."
+            else
+              echo "⚠️ Warning: Supabase returned HTTP $HTTP_STATUS (attempting fallback query on categories)..."
+              FALLBACK_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET "$CLEAN_URL/rest/v1/categories?select=id&limit=1" \
+                -H "apikey: $SUPABASE_ANON_KEY" \
+                -H "Authorization: Bearer $SUPABASE_ANON_KEY")
+              echo "Fallback categories response: $FALLBACK_STATUS"
+            fi
+          else
+            echo "ℹ️ SUPABASE_URL or SUPABASE_ANON_KEY secret not found in repository secrets."
+            echo "Please add SUPABASE_URL and SUPABASE_ANON_KEY under Repo Settings -> Secrets and variables -> Actions."
+          fi
+
+      - name: Ping Live Website & Products API
+        id: ping-site
+        env:
+          SITE_URL: ${{ secrets.SITE_URL || 'https://easyvanew.vercel.app' }}
+        run: |
+          CLEAN_SITE="${SITE_URL%/}"
+          echo "Pinging production endpoint: $CLEAN_SITE/api/products"
+          SITE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$CLEAN_SITE/api/products")
+          echo "Store API Response Status: $SITE_STATUS"
+          if [ "$SITE_STATUS" -ge 200 ] && [ "$SITE_STATUS" -lt 400 ]; then
+            echo "✅ Store API responded successfully!"
+          else
+            echo "⚠️ Notice: Store endpoint returned status $SITE_STATUS"
+          fi
+          echo "Keep-alive routine completed at $(date -u)"
